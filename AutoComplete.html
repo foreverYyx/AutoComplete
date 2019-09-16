@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+    </head>
+    <body>
+       <div>
+            <div class="inp-box">
+                <input type="text" id="inp"/>
+                <span class="clear-btn">x</span>
+            </div>
+            <ul class="drop-down-box">
+
+            </ul>
+       </div>
+    </body>
+</html>
+<style type="text/css">
+    html{
+        font-size:62.5%;
+    }
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    .inp-box{
+        display: flex;
+        height: 3rem;
+        border: 1px solid #ddd;
+        padding: .2rem .4rem;
+    }
+    .inp-box>input{
+        height: 100%;
+        flex-grow: 1;
+        border: none;
+    }
+    input:focus{
+        outline: none;
+    }
+    .inp-box span{
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 28.5rem;
+        display: inline-block;
+        font-size: 1.5rem;
+        text-align: center;
+        line-height: .8rem;
+        padding: .2rem;
+        position: relative;
+        top: .6rem;
+        color: #fff;
+        background: #ddd;
+        cursor: pointer;
+
+    }
+    ul li{
+        list-style: none;
+        cursor: pointer;
+    }
+    .drop-down-box{
+        height: 40rem;
+        border: 1px solid #ddd;
+        /* display: none; */
+    }
+    .drop-down-box li{
+        cursor: pointer;
+        padding: 1rem .5rem;
+        border-bottom: 1px solid #ddd;
+    }
+</style>
+<script>
+    var dataList=[
+        {
+            name:'小数点',
+            age:'26'
+        },{
+            name:'小明',
+            age:'40'
+        },
+        ,{
+            name:'小话',
+            age:'40'
+        },
+        ,{
+            name:'小够',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        },{
+            name:'小黑',
+            age:'40'
+        }
+    ];
+    /** 
+        params {Object}
+        data: 页面数据
+        keyword:查询关键字
+        showKey:页面展示字段
+    */
+
+    var AutoComplete=function(params,selectCallback){
+        this.showDataList=[];
+        this.dataList=params.data; 
+        this.showKey=params.showKey; 
+        this.keyword=params.keyword;
+        this.selectCallback=params.selectCallback || new Function;
+        this.$dropDownBox=document.getElementsByClassName('drop-down-box')[0]; //下拉框展示dom
+        this.$clearBtn=document.getElementsByClassName('clear-btn')[0];//输入框清空按钮
+        this.$inp=document.getElementById('inp');//输入框元素
+    }
+    AutoComplete.prototype.init=function(){
+        var _self=this;
+        this.$inp.addEventListener('input',this.debounce(this.filterData));
+        this.$dropDownBox.addEventListener('click',function(){
+            var index=event.target.getAttribute('index');
+            _self.checkedData(index);
+        });
+        this.$clearBtn.addEventListener('click',function(){
+            _self.clearInp();
+        });
+        return this;
+    };
+    // 选中数据
+    AutoComplete.prototype.checkedData=function(index){
+        for(var i in this.showDataList){
+            if(i==index){
+                this.hide(this.showDataList[i]);
+                return this;
+            }
+        }
+        return this;
+    };
+    AutoComplete.prototype.hide=function(data){
+        this.selectCallback(data);
+        this.$inp.value=data[this.showKey];
+        this.$dropDownBox.style.display='none';
+        return this;
+    }
+    // 清除数据
+    AutoComplete.prototype.clearInp=function(){
+        this.$inp.value="";
+        this.showDataList=[];
+        this.$dropDownBox.style.display='none';
+        return this;
+    }
+    // 防抖东函数
+    AutoComplete.prototype.debounce=function(fn){
+         var _self=this;
+        var time;
+        return function(){
+            var argument=arguments;
+            clearTimeout(time);
+            time=setTimeout(function(){
+                fn.apply(_self, argument);
+            },500)
+        }
+        return this;
+    };
+    // 数据过滤
+    AutoComplete.prototype.filterData=function(event){
+        var val=event.target.value.replace(/(^\s*) |(\s*$)/g,'');
+        var _self=this;
+        this.showDataList= this.dataList.filter(function(item,index,arr){
+           var reg=new RegExp(val,'g');
+            if(item[_self.keyword].search(reg)!=-1){
+                return item;
+            }
+        });
+        if(this.showDataList.length>10){
+            this.showDataList= this.showDataList.splice(0,10);
+        }
+        if(this.showDataList.length>0){
+            this.$dropDownBox.style.display='block';
+            this.renderHtml();
+        }else{
+            this.$dropDownBox.style.display='none';
+        }
+        return this;
+    };
+    //渲染html
+    AutoComplete.prototype.renderHtml=function(){
+        var html="";
+        for(var i in this.showDataList){
+            html+="<li index="+i+">"+this.showDataList[i][this.showKey]+"</li>"
+        }
+        this.$dropDownBox.innerHTML=html;
+        return this;
+    };
+
+    var autoComplete=new AutoComplete({
+        data:dataList,
+        keyword:'name',
+        showKey:'name',
+        selectCallback:function(data){
+            console.log(data,'我选中的数据')
+        }
+    });
+    autoComplete.init();
+</script>
