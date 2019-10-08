@@ -204,3 +204,24 @@ define(function (require, exports, module) {
     };
     module.exports = Time;
 });
+
+//默认css样式
+    /* 默认样式 */
+    .g-content-box ul li,
+    .g-dete-header-ul li {
+        float: left;
+        list-style: none;
+        text-align: center;
+        color: #42436A;
+        width: 14%;
+    }
+
+    .g-content-box ul li span {
+        width: 80/@unitSize;
+        margin: .8rem;
+        height: 80/@unitSize;
+        display: inline-block;
+        line-height: 80/@unitSize;
+        font-size: 40/@unitSize;
+        cursor: pointer;
+    }
